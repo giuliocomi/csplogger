@@ -1,5 +1,5 @@
 flask
-cryptography==2.2.2
+cryptography==2.3
 pyopenssl
 flask_limiter
 jsonschema
