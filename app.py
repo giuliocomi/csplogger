@@ -96,15 +96,16 @@ def log():
         try:
             validate_json(req_data)
         except jsonschema.exceptions.ValidationError as ve:
-            return ""  # the less information we leak, the better!
+            return str(ve)  # the less information we leak, the better!
 
         # save CSP violation in the database (after applying a restriction on the length of the values)
         try:
             cur.execute('INSERT INTO violations (cspreportblockeduri,cspreportdocumenturi,cspreportoriginalpolicy,cspreportreferrer,cspreportviolateddirective, cspreportlinenumber, cspreportcolumnnumber, cspreportsourcefile, remoteaddr, useragent) VALUES (?,?,?,?,?,?,?,?,?,?)', (str(req_data["csp-report"]["blocked-uri"])[0:max_field_size], str(req_data["csp-report"]["document-uri"])[0:max_field_size], str(req_data["csp-report"]["original-policy"])[0:max_field_size], str(req_data["csp-report"]["referrer"])[0:max_field_size], str(req_data["csp-report"]["violated-directive"])[0:max_field_size], str(req_data.get('csp-report', {}).get('line-number', ''))[0:max_field_size], str(req_data.get('csp-report', {}).get('column-number', ''))[0:max_field_size], str(req_data.get('csp-report', {}).get('source-file', ''))[0:max_field_size], str(request.remote_addr)[0:max_field_size], str(request.user_agent)[0:max_field_size]))
             conn.commit()
-        except:
-            pass    # the less information we leak, the better!
-        return ""
+        except Exception as error:
+            print(str(error)) 
+	    pass   # the less information we leak, the better!
+        return ""		 # the less information we leak, the better!
 
 @app.route('/records', methods=['GET'])
 @limiter.limit("100/day")
