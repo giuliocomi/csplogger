@@ -10,11 +10,50 @@ import jsonschema
 from jsonschema import validate
 
 conn = sqlite3.connect('databases/csp_violations.db', check_same_thread=False)
-# create table
-conn.execute('CREATE TABLE IF NOT EXISTS violations (cspreportblockeduri TEXT,cspreportdocumenturi,cspreportoriginalpolicy TEXT,cspreportreferrer TEXT,cspreportviolateddirective TEXT, remoteaddr TEXT, useragent TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)')
 
-valid_schema = {"type":"object","properties":{"csp-report":{"type":"object","properties":{"blocked-uri":{"type":"string"},"document-uri":{"type":"string"},"original-policy":{"type":"string"},"referrer":{"type":"string"},"violated-directive":{"type":"string"}}}}}
+# create database file and table, if not present
+conn.execute('CREATE TABLE IF NOT EXISTS violations (cspreportblockeduri TEXT,cspreportdocumenturi,cspreportoriginalpolicy TEXT,cspreportreferrer TEXT,cspreportviolateddirective TEXT, cspreportlinenumber TEXT, cspreportcolumnumber TEXT, cspreportsourcefile TEXT, remoteaddr TEXT, useragent TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)')
+
+valid_schema = {
+                    "type": "object",
+                    "properties": {
+                        "csp-report": {
+                            "type": "object",
+                            "properties": {
+                                "blocked-uri": {
+                                    "type": "string"
+                                },
+                                "document-uri": {
+                                    "type": "string"
+                                },
+                                "original-policy": {
+                                    "type": "string"
+                                },
+                                "referrer": {
+                                    "type": "string"
+                                },
+                                "violated-directive": {
+                                    "type": "string"
+                                },
+                                "line-number": {
+                                    "type": "integer",
+                                    "optional": True
+                                },
+                                "source-file": {
+                                    "type": "string",
+                                    "optional": True
+                                },
+                                "column-number": {
+                                    "type": "integer",
+                                    "optional": True
+                                }
+                            }
+                        }
+                    }
+                }
+
 max_field_size = 300
+
 
 # override to get rid of the information disclosure of 'Server' header, ensure that some Security Headers are present
 class empoweredHeadersFlask(Flask):
@@ -41,11 +80,11 @@ limiter.header_mapping = {
 }
 
 def validate_json(input):
-		# valid log format and content to accept; the length restriction on this field is applied during the insertion in the database
-	   try:
-	   		validate(input, valid_schema)
-	   except:
-	   		raise
+        # valid log format and content to accept; the length restriction on this field is applied during the insertion in the database
+       try:
+            validate(input, valid_schema)
+       except:
+            raise
 
 @app.route('/log', methods=['POST'])
 @limiter.limit("100/day")
@@ -55,17 +94,17 @@ def log():
 
         # check if the input adheres to the schema expected
         try:
-        	validate_json(req_data)
+            validate_json(req_data)
         except jsonschema.exceptions.ValidationError as ve:
-        	return ""
+            return ""  # the less information we leak, the better!
 
-    	# save CSP violation in the database (after applying a restriction on the length of the values)
+        # save CSP violation in the database (after applying a restriction on the length of the values)
         try:
-        	cur.execute('INSERT INTO violations (cspreportblockeduri,cspreportdocumenturi,cspreportoriginalpolicy,cspreportreferrer,cspreportviolateddirective, remoteaddr, useragent) VALUES (?,?,?,?,?,?,?)', (str(req_data["csp-report"]["blocked-uri"])[0:max_field_size], str(req_data["csp-report"]["document-uri"])[0:max_field_size], str(req_data["csp-report"]["original-policy"])[0:max_field_size], str(req_data["csp-report"]["referrer"])[0:max_field_size], str(req_data["csp-report"]["violated-directive"])[0:max_field_size], str(request.remote_addr)[0:max_field_size], str(request.user_agent)[0:max_field_size]))
-        	conn.commit()
+            cur.execute('INSERT INTO violations (cspreportblockeduri,cspreportdocumenturi,cspreportoriginalpolicy,cspreportreferrer,cspreportviolateddirective, cspreportlinenumber, cspreportcolumnnumber, cspreportsourcefile, remoteaddr, useragent) VALUES (?,?,?,?,?,?,?,?,?,?)', (str(req_data["csp-report"]["blocked-uri"])[0:max_field_size], str(req_data["csp-report"]["document-uri"])[0:max_field_size], str(req_data["csp-report"]["original-policy"])[0:max_field_size], str(req_data["csp-report"]["referrer"])[0:max_field_size], str(req_data["csp-report"]["violated-directive"])[0:max_field_size], str(req_data.get('csp-report', {}).get('line-number', ''))[0:max_field_size], str(req_data.get('csp-report', {}).get('column-number', ''))[0:max_field_size], str(req_data.get('csp-report', {}).get('source-file', ''))[0:max_field_size], str(request.remote_addr)[0:max_field_size], str(request.user_agent)[0:max_field_size]))
+            conn.commit()
         except:
-        	pass	# the less information we leak, the better!
-        return "" 
+            pass    # the less information we leak, the better!
+        return ""
 
 @app.route('/records', methods=['GET'])
 @limiter.limit("100/day")
@@ -82,4 +121,4 @@ def dashboard():
     return render_template('dashboard.html')
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=443, ssl_context='adhoc')
+    app.run('0.0.0.0', port=8443, ssl_context='adhoc')

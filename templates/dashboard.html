@@ -26,8 +26,12 @@
                             '<td>' + htmlEntities(entries[r]["cspreportoriginalpolicy"]) + '</td>' +
                             '<td>' + htmlEntities(entries[r]["cspreportreferrer"]) + '</td>' +
                             '<td>' + htmlEntities(entries[r]["cspreportdocumenturi"]) + '</td>' +
-                            '<td>' + htmlEntities(entries[r]["useragent"]) + '</td>' +
+                            '<td>' + htmlEntities(entries[r]["cspreportlinenumber"]) + '</td>' +
+                            '<td>' + htmlEntities(entries[r]["cspreportcolumnnumber"]) + '</td>' +
+                            '<td>' + htmlEntities(entries[r]["cspreportsourcefile"]) + '</td>' +
+                            '<td>' + htmlEntities(entries[r]["remoteaddr"]) + '</td>'+
                             '<td>' + htmlEntities(entries[r]["remoteaddr"]) + '</td>';
+
                       row.innerHTML = out;
                       fragment.appendChild(row);
               }
@@ -63,6 +67,9 @@
                   <th class="th-sm" scope="col">original-policy</th>
                   <th class="th-sm" scope="col">referrer</th>
                   <th class="th-sm" scope="col">document-uri</th>
+                  <th class="th-sm" scope="col">line number</th>
+                  <th class="th-sm" scope="col">column number</th>
+                  <th class="th-sm" scope="col">source file</th>
                   <th class="th-sm" scope="col">user agent</th>
                   <th class="th-sm" scope="col">remote address</th>
               </tr>
