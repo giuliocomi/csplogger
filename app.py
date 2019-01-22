@@ -8,51 +8,13 @@ from flask_limiter import Limiter, HEADERS
 from flask_limiter.util import get_remote_address
 import jsonschema
 from jsonschema import validate
+from costants import valid_schema, max_field_size
 
 conn = sqlite3.connect('databases/csp_violations.db', check_same_thread=False)
 
 # create database file and table, if not present
 conn.execute('CREATE TABLE IF NOT EXISTS violations (cspreportblockeduri TEXT,cspreportdocumenturi,cspreportoriginalpolicy TEXT,cspreportreferrer TEXT,cspreportviolateddirective TEXT, cspreportlinenumber TEXT, cspreportcolumnnumber TEXT, cspreportsourcefile TEXT, remoteaddr TEXT, useragent TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)')
 
-valid_schema = {
-                    "type": "object",
-                    "properties": {
-                        "csp-report": {
-                            "type": "object",
-                            "properties": {
-                                "blocked-uri": {
-                                    "type": "string"
-                                },
-                                "document-uri": {
-                                    "type": "string"
-                                },
-                                "original-policy": {
-                                    "type": "string"
-                                },
-                                "referrer": {
-                                    "type": "string"
-                                },
-                                "violated-directive": {
-                                    "type": "string"
-                                },
-                                "line-number": {
-                                    "type": "integer",
-                                    "optional": True
-                                },
-                                "source-file": {
-                                    "type": "string",
-                                    "optional": True
-                                },
-                                "column-number": {
-                                    "type": "integer",
-                                    "optional": True
-                                }
-                            }
-                        }
-                    }
-                }
-
-max_field_size = 300
 
 
 # override to get rid of the information disclosure of 'Server' header, ensure that some Security Headers are present
@@ -123,4 +85,5 @@ def dashboard():
     return render_template('dashboard.html')
 
 if __name__ == '__main__':
+    import sys
     app.run('0.0.0.0', port=8443, ssl_context='adhoc')
