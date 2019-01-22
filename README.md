@@ -16,7 +16,7 @@ Note: to successfully collect the violations occured from the browsers of the co
 
 ### How it (should) works
 
-1) The endpoint is ideally reacheable from every network segment of the company.
+1) The endpoint is ideally reacheable from every network segment of the company
 2) The intranet web applications or the corporate web proxies ensure that this header is set in HTTP responses:
 ```
     Content-Security-Policy-Report-Only: [HERE_THE_HARDENED_POLICY_TO_TEST]; report-uri https://[IP_OF_ENDPOINT]/log
@@ -52,4 +52,4 @@ docker run giuliocomi/csplogger:latest
 Spot a bug? Please create an issue here on GitHub (https://github.com/giuliocomi/csplogger/issues)
 
 ## License
-This project is licensed under the Apache License 2.0
+This project is licensed under the  GNU general public license Version 3.
