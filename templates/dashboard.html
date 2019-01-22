@@ -3,7 +3,6 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
       <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery-3.3.1.slim.min.js') }}"></script>
-      <link rel=stylesheet type="text/css" href="{{ url_for('static', filename='css/jquery.dataTables.css') }}">
       <link rel=stylesheet type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
       <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery.dataTables.js') }}"></script>
       <script type="text/javascript" src="{{ url_for('static', filename = 'js/popper.min.js') }}"></script>
@@ -29,7 +28,7 @@
                             '<td>' + htmlEntities(entries[r]["cspreportlinenumber"]) + '</td>' +
                             '<td>' + htmlEntities(entries[r]["cspreportcolumnnumber"]) + '</td>' +
                             '<td>' + htmlEntities(entries[r]["cspreportsourcefile"]) + '</td>' +
-                            '<td>' + htmlEntities(entries[r]["remoteaddr"]) + '</td>'+
+                            '<td>' + htmlEntities(entries[r]["useragent"]) + '</td>'+
                             '<td>' + htmlEntities(entries[r]["remoteaddr"]) + '</td>';
 
                       row.innerHTML = out;
@@ -67,11 +66,11 @@
                   <th class="th-sm" scope="col">original-policy</th>
                   <th class="th-sm" scope="col">referrer</th>
                   <th class="th-sm" scope="col">document-uri</th>
-                  <th class="th-sm" scope="col">line number</th>
-                  <th class="th-sm" scope="col">column number</th>
-                  <th class="th-sm" scope="col">source file</th>
-                  <th class="th-sm" scope="col">user agent</th>
-                  <th class="th-sm" scope="col">remote address</th>
+                  <th class="th-sm" scope="col">line-number</th>
+                  <th class="th-sm" scope="col">column-number</th>
+                  <th class="th-sm" scope="col">source-file</th>
+                  <th class="th-sm" scope="col">user-agent</th>
+                  <th class="th-sm" scope="col">remote-address</th>
               </tr>
             </center>
           </thead>
@@ -82,10 +81,5 @@
           <a href="https://github.com/giuliocomi/csplogger"><img src="data:image/png;base64,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"></a>
         </footer>
   </body>
-<style>
-thead > tr > th, tbody > tr > td {
-  border: 2px solid #f4511e;
-}
-</style>
 <link rel=stylesheet type="text/css" href="{{ url_for('static', filename = 'css/customcss.css') }}">
 </html>

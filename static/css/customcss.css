@@ -14,15 +14,8 @@ table.dataTable thead .sorting_desc_disabled:before {
 body {
   background-color: #333333; 
   color: white;
-      border-left: solid 1px green;
-
 }
 
-tbody tr:nth-child(even) {
-  background-color: #666666;
-      border-left: solid 1px green;
-
-}
 
 #logo {
   margin: auto;
@@ -32,32 +25,18 @@ tbody tr:nth-child(even) {
 }
 
 thead tr {
-    border: 4px solid #f4511e;
     text-align: center;
-    border-left: solid 1px red;
 
 }
 
 tbody tr {
-    border: 4px solid #f4511e;
     text-align: center;
-    border-left: solid 1px red;
 
 
 }
 
 thead td {
-    border: 4px solid #f4511e;
     text-align: center;
-    border-left: solid 1px red;
-
-}
-
-tbody tr {
-    border: 4px solid #f4511e;
-    text-align: center;
-    border-left: solid 1px red;
-
 }
 
 th {
@@ -66,8 +45,7 @@ th {
   background: #f4511e;  
   font-size: 15px;
   text-align: center;
-  border: 5px solid #f4511e;
-  border-left: solid 1px red;
+  border: 3px solid #f4511e;
 
 }
 

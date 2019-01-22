@@ -61,7 +61,7 @@ class empoweredHeadersFlask(Flask):
          response.headers['Server'] = "CSP report-uri endpoint"
          response.headers['Strict-Transport-Security'] = "max-age=31536000;" 
          response.headers['X-Frame-Options'] = "SAMEORIGIN"
-         response.headers['Content-Security-Policy'] = "style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'"
+         response.headers['Content-Security-Policy'] = "style-src 'self'; script-src 'self' 'unsafe-inline'"
          response.headers['X-Content-Type-Option'] = "nosniff"
          return(response)
 
@@ -90,13 +90,14 @@ def validate_json(input):
 @limiter.limit("100/day")
 def log():
         cur = conn.cursor()
-        req_data = json.loads(request.data)
-
+      
         # check if the input adheres to the schema expected
         try:
+	    req_data = json.loads(request.data)
             validate_json(req_data)
-        except jsonschema.exceptions.ValidationError as ve:
-            return str(ve)  # the less information we leak, the better!
+        except Exception as e:
+	    print(str(e))
+            return ""  # the less information we leak, the better!
 
         # save CSP violation in the database (after applying a restriction on the length of the values)
         try:
@@ -104,8 +105,8 @@ def log():
             conn.commit()
         except Exception as error:
             print(str(error)) 
-	    pass   # the less information we leak, the better!
-        return ""		 # the less information we leak, the better!
+	    pass   
+        return ""		
 
 @app.route('/records', methods=['GET'])
 @limiter.limit("100/day")
