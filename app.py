@@ -6,15 +6,13 @@ from flask import Flask, request, jsonify, Response, render_template
 import sqlite3
 from flask_limiter import Limiter, HEADERS
 from flask_limiter.util import get_remote_address
-import jsonschema
 from jsonschema import validate
-from costants import valid_schema, max_field_size
+from costants import VALID_SCHEMA, MAX_FIELD_SIZE, DEFAULT_LIMITS
 
 conn = sqlite3.connect('databases/csp_violations.db', check_same_thread=False)
 
 # create database file and table, if not present
 conn.execute('CREATE TABLE IF NOT EXISTS violations (cspreportblockeduri TEXT,cspreportdocumenturi,cspreportoriginalpolicy TEXT,cspreportreferrer TEXT,cspreportviolateddirective TEXT, cspreportlinenumber TEXT, cspreportcolumnnumber TEXT, cspreportsourcefile TEXT, remoteaddr TEXT, useragent TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)')
-
 
 
 # override to get rid of the information disclosure of 'Server' header, ensure that some Security Headers are present
@@ -33,7 +31,7 @@ app = empoweredHeadersFlask(__name__)
 limiter = Limiter(
     app,
     key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"]
+    default_limits=DEFAULT_LIMITS
 )
 limiter.header_mapping = {
     HEADERS.LIMIT : "X-My-Limit",
@@ -44,12 +42,11 @@ limiter.header_mapping = {
 def validate_json(input):
         # valid log format and content to accept; the length restriction on this field is applied during the insertion in the database
        try:
-            validate(input, valid_schema)
+            validate(input, VALID_SCHEMA)
        except:
             raise
 
 @app.route('/log', methods=['POST'])
-@limiter.limit("100/day")
 def log():
         cur = conn.cursor()
       
@@ -59,19 +56,28 @@ def log():
             validate_json(req_data)
         except Exception as e:
 	    print(str(e))
-            return ""  # the less information we leak, the better!
+            return "" # the less information we leak, the better!
 
         # save CSP violation in the database (after applying a restriction on the length of the values)
         try:
-            cur.execute('INSERT INTO violations (cspreportblockeduri,cspreportdocumenturi,cspreportoriginalpolicy,cspreportreferrer,cspreportviolateddirective, cspreportlinenumber, cspreportcolumnnumber, cspreportsourcefile, remoteaddr, useragent) VALUES (?,?,?,?,?,?,?,?,?,?)', (str(req_data["csp-report"]["blocked-uri"])[0:max_field_size], str(req_data["csp-report"]["document-uri"])[0:max_field_size], str(req_data["csp-report"]["original-policy"])[0:max_field_size], str(req_data["csp-report"]["referrer"])[0:max_field_size], str(req_data["csp-report"]["violated-directive"])[0:max_field_size], str(req_data.get('csp-report', {}).get('line-number', ''))[0:max_field_size], str(req_data.get('csp-report', {}).get('column-number', ''))[0:max_field_size], str(req_data.get('csp-report', {}).get('source-file', ''))[0:max_field_size], str(request.remote_addr)[0:max_field_size], str(request.user_agent)[0:max_field_size]))
+            cur.execute('INSERT INTO violations (cspreportblockeduri,cspreportdocumenturi,cspreportoriginalpolicy,cspreportreferrer,cspreportviolateddirective, cspreportlinenumber, cspreportcolumnnumber, cspreportsourcefile, remoteaddr, useragent) VALUES (?,?,?,?,?,?,?,?,?,?)', 
+			(str(req_data["csp-report"]["blocked-uri"])[0:MAX_FIELD_SIZE], 
+			str(req_data["csp-report"]["document-uri"])[0:MAX_FIELD_SIZE],
+			str(req_data["csp-report"]["original-policy"])[0:MAX_FIELD_SIZE], 
+			str(req_data["csp-report"]["referrer"])[0:MAX_FIELD_SIZE],
+			str(req_data["csp-report"]["violated-directive"])[0:MAX_FIELD_SIZE], 
+			str(req_data.get('csp-report', {}).get('line-number', ''))[0:MAX_FIELD_SIZE], 
+			str(req_data.get('csp-report', {}).get('column-number', ''))[0:MAX_FIELD_SIZE], 
+			str(req_data.get('csp-report', {}).get('source-file', ''))[0:MAX_FIELD_SIZE],
+			str(request.remote_addr)[0:MAX_FIELD_SIZE], 
+			str(request.user_agent)[0:MAX_FIELD_SIZE]))
             conn.commit()
         except Exception as error:
             print(str(error)) 
 	    pass   
-        return ""		
+        return ""	
 
 @app.route('/records', methods=['GET'])
-@limiter.limit("100/day")
 def records():
         conn.row_factory = sqlite3.Row 
         cur = conn.cursor()
@@ -80,10 +86,8 @@ def records():
         return jsonify([dict(ix) for ix in entries]) # jsonify sets mime-type to application/json
         
 @app.route('/dashboard', methods=['GET'])
-@limiter.limit("100/day")
 def dashboard():    
     return render_template('dashboard.html')
 
 if __name__ == '__main__':
-    import sys
     app.run('0.0.0.0', port=8443, ssl_context='adhoc')

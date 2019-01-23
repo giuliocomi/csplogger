@@ -1,4 +1,4 @@
-valid_schema = {
+VALID_SCHEMA = {
                     "type": "object",
                     "properties": {
                         "csp-report": {
@@ -36,5 +36,6 @@ valid_schema = {
                     }
                 }
 
-max_field_size = 300
+MAX_FIELD_SIZE = 300
 
+DEFAULT_LIMITS=["2000 per day", "500 per hour"]
