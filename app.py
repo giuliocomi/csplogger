@@ -21,7 +21,7 @@ class empoweredHeadersFlask(Flask):
          response.headers['Server'] = "CSP report-uri endpoint"
          response.headers['Strict-Transport-Security'] = "max-age=31536000;" 
          response.headers['X-Frame-Options'] = "SAMEORIGIN"
-         response.headers['Content-Security-Policy'] = "style-src 'self'; script-src 'self' 'unsafe-inline'"
+         response.headers['Content-Security-Policy'] = "style-src 'self' https:; script-src 'self' 'sha256-Zxa5C//BrK7eH6glsuvvtFKzpHwE27xZGvMCLf3/NME=' https:; connect-src 'self'"
          response.headers['X-Content-Type-Option'] = "nosniff"
          return(response)
 
