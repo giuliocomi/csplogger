@@ -21,8 +21,8 @@ Note: to successfully collect the violations occured from the browsers of the co
 ```
     Content-Security-Policy-Report-Only: [HERE_THE_HARDENED_POLICY_TO_TEST]; report-uri https://[IP_OF_ENDPOINT]/log
 ```
-2) Users daily navigate the intranet websites without any impact to their work while their browsers send "in background" the violations occured for every single resources loaded (js, css, image, etc.) that would be blocked by the desired CSP configuration.
-3) Here comes the tricky part: make sense of all the data, addressing the violations per website, figure out if the policy should be deployed in a more permissive configuration or get rid of the resources in a way that ensures usability but also a more secure implementation.
+3) Users daily navigate the intranet websites without any impact to their work while their browsers send "in background" the violations occured for every single resources loaded (js, css, image, etc.) that would be blocked by the desired CSP configuration.
+4) Here comes the tricky part: make sense of all the data, addressing the violations per website, figure out if the policy should be deployed in a more permissive configuration or get rid of the resources in a way that ensures usability but also a more secure implementation.
 
 ### Installation
 ```
