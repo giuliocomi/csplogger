@@ -1,6 +1,5 @@
 # csplogger
 An endpoint to aggregate and analyze CSP violations across your infrastructure.
-
 CSP logger is addressed to the ones that daily strive to implement a good CSP, free from 'unsafe-inline' and similar demons.
 
 ## Why
@@ -34,11 +33,12 @@ docker pull giuliocomi/csplogger:latest
 This endpoint is best suited to run in a docker image deployed in the corporate intranet.
 
 ```
-docker run giuliocomi/csplogger:latest
+docker run -it -v csplogger_db:/home/csplger-agent/csplogger/databases/  giuliocomi/csplogger:latest
+
 ```
 Running the container with a SECCOMP profile:
 ```
-docker run --security-opt seccomp=seccomp-profile-csplogger.json giuliocomi/csplogger:latest
+docker run --security-opt seccomp=seccomp-profile-csplogger.json  -v csplogger_db:/home/csplger-agent/csplogger/databases/ giuliocomi/csplogger:latest
 ```
 
 #### Examples
