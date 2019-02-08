@@ -36,7 +36,7 @@ This endpoint is best suited to run in a docker image deployed in the corporate 
 ```
 docker run giuliocomi/csplogger:latest
 ```
-Running the container witha SECCOMP profile:
+Running the container with a SECCOMP profile:
 ```
 docker run --security-opt seccomp=seccomp-profile-csplogger.json giuliocomi/csplogger:latest
 ```
