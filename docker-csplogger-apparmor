@@ -37,8 +37,6 @@ profile docker-csplogger-apparmor flags=(attach_disconnected,mediate_deleted) {
 
   /home/csplogger-agent/csplogger/databases w,
 
-  /bin/id ix,
-  /bin/sh ix,
 
   deny /sbin/* mrwklx,
   deny /bin/arch mrwklx,

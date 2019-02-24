@@ -35,8 +35,6 @@ WritablePaths = [
 
 # allowed executable files for the container
 AllowExec = [
-	"/bin/id",
-	"/bin/sh"
 ]
 
 
