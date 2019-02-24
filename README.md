@@ -10,6 +10,7 @@ Fortunately, the CSP can be configured in a "report only but do not block" mode 
 1) Essentiality and portability achieved with flask, sqlite and datastore
 2) Dashboard that provides the capability for searching, filtering, ordering violations by type, timestamp, website, external resource, etc.
 3) Configurable limits to prevent feature abuses (resource draining, unreliable results by spoofed/crafted logs)
+4) Implemented with security in mind: hardened profiles for SECCOMP and Apparmor available.
 
 Note: to successfully collect the violations occured from the browsers of the corporate users the endpoint must use a TLS certificate released by an internal Certificate Authority, otherwise the browsers will not send the violations automagically :-).
 
@@ -33,12 +34,12 @@ docker pull giuliocomi/csplogger
 This endpoint is best suited to run in a docker image deployed in the corporate intranet.
 
 ```
-docker run -it -v csplogger_db:/home/csplogger-agent/csplogger/databases/  giuliocomi/csplogger
+docker run -it -v [LOCAL_VOLUME]:/home/csplogger-agent/csplogger/databases/  giuliocomi/csplogger
 
 ```
-Running the container with a SECCOMP profile:
+Running the container with SECCOMP and Apparmor profiles enabled:
 ```
-docker run --security-opt seccomp=seccomp-profile-csplogger.json  -v csplogger_db:/home/csplogger-agent/csplogger/databases/ giuliocomi/csplogger
+docker run --security-opt="apparmor:docker-csplogger-apparmor" --security-opt seccomp=seccomp-profile-csplogger.json  -v [LOCAL_VOLUME]:/home/csplogger-agent/csplogger/databases/ giuliocomi/csplogger
 ```
 
 #### Examples
