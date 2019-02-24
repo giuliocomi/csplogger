@@ -39,7 +39,7 @@ docker run -it -v [LOCAL_VOLUME]:/home/csplogger-agent/csplogger/databases/  giu
 ```
 Running the container with SECCOMP and Apparmor profiles enabled:
 ```
-docker run --security-opt="apparmor:docker-csplogger-apparmor" --security-opt seccomp=seccomp-profile-csplogger.json  -v [LOCAL_VOLUME]:/home/csplogger-agent/csplogger/databases/ giuliocomi/csplogger
+docker run --security-opt="apparmor:docker-csplogger-apparmor" --security-opt seccomp=seccomp-profile-csplogger.json  -v [LOCAL_VOLUME]:/home/csplogger-agent/csplogger/databases/ --cpus 1 --memory 512Mb giuliocomi/csplogger
 ```
 
 #### Examples
