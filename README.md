@@ -25,7 +25,7 @@ Note: to successfully collect the violations occured from the browsers of the co
 
 ### Installation
 ```
-docker pull giuliocomi/csplogger:latest
+docker pull giuliocomi/csplogger
 ```
 (https://cloud.docker.com/repository/docker/giuliocomi/csplogger/).
 
@@ -33,12 +33,12 @@ docker pull giuliocomi/csplogger:latest
 This endpoint is best suited to run in a docker image deployed in the corporate intranet.
 
 ```
-docker run -it -v csplogger_db:/home/csplogger-agent/csplogger/databases/  giuliocomi/csplogger:latest
+docker run -it -v csplogger_db:/home/csplogger-agent/csplogger/databases/  giuliocomi/csplogger
 
 ```
 Running the container with a SECCOMP profile:
 ```
-docker run --security-opt seccomp=seccomp-profile-csplogger.json  -v csplogger_db:/home/csplogger-agent/csplogger/databases/ giuliocomi/csplogger:latest
+docker run --security-opt seccomp=seccomp-profile-csplogger.json  -v csplogger_db:/home/csplogger-agent/csplogger/databases/ giuliocomi/csplogger
 ```
 
 #### Examples
