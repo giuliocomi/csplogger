@@ -2,7 +2,7 @@
 # coding: utf-8
 
 import json
-from flask import Flask, request, jsonify, Response, render_template
+from flask import Flask, request, jsonify, render_template
 import sqlite3
 from flask_limiter import Limiter, HEADERS
 from flask_limiter.util import get_remote_address
@@ -74,7 +74,6 @@ def log():
             conn.commit()
         except Exception as error:
             print(str(error)) 
-	    pass   
         return ""	
 
 @app.route('/records', methods=['GET'])
