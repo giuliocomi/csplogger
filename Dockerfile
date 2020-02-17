@@ -1,6 +1,6 @@
-FROM alpine
+FROM alpine:3.11
 
-RUN apk add --update \
+RUN apk add --no-cache \
 	python \
 	sqlite \
 	libffi-dev \
@@ -14,17 +14,15 @@ RUN apk add --update \
 	&& rm -rf /var/cache/apk/*
 
 RUN adduser -D csplogger-agent
-WORKDIR /home/csplogger-agent
 
-RUN git clone https://github.com/giuliocomi/csplogger 
-RUN chown -R csplogger-agent:csplogger-agent ./
-WORKDIR csplogger
+COPY --chown=csplogger-agent:csplogger-agent [ "requirements.txt", "/app/" ]
+RUN pip install -r /app/requirements.txt
 
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-HEALTHCHECK --interval=50s --timeout=3s --start-period=5s CMD  [ "curl -k --fail https://localhost:8443/ || exit 1"]
+COPY --chown=csplogger-agent:csplogger-agent [ ".", "/app/" ]
 
-USER csplogger-agent
-ENV FLASK_APP app.py
 EXPOSE 8443
-ENTRYPOINT ["python", "app.py"]
+USER csplogger-agent
+WORKDIR /home/csplogger-agent/csplogger
+ENV FLASK_APP app.py
+HEALTHCHECK --interval=50s --timeout=3s --start-period=5s CMD  [ "curl -k --fail https://localhost:8443/ || exit 1"]
+ENTRYPOINT ["python", "/app/app.py"]
