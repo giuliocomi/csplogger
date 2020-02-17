@@ -16,9 +16,9 @@ RUN apk add --no-cache \
 RUN adduser -D csplogger-agent
 WORKDIR /home/csplogger-agent
 
-RUN git clone https://github.com/giuliocomi/csplogger 
-RUN chown -R csplogger-agent:csplogger-agent ./
-WORKDIR csplogger
+RUN git clone https://github.com/giuliocomi/csplogger csplogger \
+  && chown -R csplogger-agent:csplogger-agent csplogger
+WORKDIR /home/csplogger-agent/csplogger
 
 RUN pip install -r requirements.txt
 HEALTHCHECK --interval=50s --timeout=3s --start-period=5s CMD  [ "curl -k --fail https://localhost:8443/ || exit 1"]
