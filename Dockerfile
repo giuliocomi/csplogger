@@ -22,7 +22,7 @@ COPY --chown=csplogger-agent:csplogger-agent [ ".", "/app/" ]
 
 EXPOSE 8443
 USER csplogger-agent
-WORKDIR /home/csplogger-agent/csplogger
+WORKDIR /app
 ENV FLASK_APP app.py
 HEALTHCHECK --interval=50s --timeout=3s --start-period=5s CMD  [ "curl -k --fail https://localhost:8443/ || exit 1"]
-ENTRYPOINT ["python", "/app/app.py"]
+CMD [ "gunicorn", "--bind", "0.0.0.0:8443", "app:app" ]
